@@ -1,0 +1,113 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+
+package "<<Factory Method>> Packaging subsystem" {
+  interface PackagingPlan {
+    + name(): String
+    + materialCost(weightKg): double
+    + handlingInstruction(): String
+  }
+  class StandardPackaging
+  class FragilePackaging
+  class ExpressPackaging
+  abstract class PackagingCreator {
+    # createPackaging(): PackagingPlan
+    + prepare(weightKg): PackagingQuote
+  }
+  class StandardPackagingCreator
+  class FragilePackagingCreator
+  class ExpressPackagingCreator
+  class PackagingQuote
+
+  PackagingPlan <|.. StandardPackaging
+  PackagingPlan <|.. FragilePackaging
+  PackagingPlan <|.. ExpressPackaging
+  PackagingCreator <|-- StandardPackagingCreator
+  PackagingCreator <|-- FragilePackagingCreator
+  PackagingCreator <|-- ExpressPackagingCreator
+  PackagingCreator ..> PackagingPlan : <<Factory Method>> creates/uses
+  PackagingCreator ..> PackagingQuote : returns
+}
+
+package "<<Abstract Factory>> Warehouse subsystem" {
+  interface Scanner
+  interface LabelPrinter
+  interface Sorter
+  interface WarehouseFactory {
+    + createScanner(): Scanner
+    + createLabelPrinter(): LabelPrinter
+    + createSorter(): Sorter
+    + familyName(): String
+  }
+
+  class FastBarcodeScanner
+  class ThermalLabelPrinter
+  class HighSpeedSorter
+  class EcommerceWarehouseFactory
+
+  class ColdResistantScanner
+  class FreezerLabelPrinter
+  class ColdStorageSorter
+  class ColdStorageWarehouseFactory
+
+  class RuggedScanner
+  class IndustrialLabelPrinter
+  class HeavyDutySorter
+  class HeavyCargoWarehouseFactory
+
+  class TraceableScanner
+  class SecureLabelPrinter
+  class ValidatedSorter
+  class PharmaWarehouseFactory
+
+  Scanner <|.. FastBarcodeScanner
+  Scanner <|.. ColdResistantScanner
+  Scanner <|.. RuggedScanner
+  Scanner <|.. TraceableScanner
+  LabelPrinter <|.. ThermalLabelPrinter
+  LabelPrinter <|.. FreezerLabelPrinter
+  LabelPrinter <|.. IndustrialLabelPrinter
+  LabelPrinter <|.. SecureLabelPrinter
+  Sorter <|.. HighSpeedSorter
+  Sorter <|.. ColdStorageSorter
+  Sorter <|.. HeavyDutySorter
+  Sorter <|.. ValidatedSorter
+
+  WarehouseFactory <|.. EcommerceWarehouseFactory
+  WarehouseFactory <|.. ColdStorageWarehouseFactory
+  WarehouseFactory <|.. HeavyCargoWarehouseFactory
+  WarehouseFactory <|.. PharmaWarehouseFactory
+
+  EcommerceWarehouseFactory ..> FastBarcodeScanner : creates
+  EcommerceWarehouseFactory ..> ThermalLabelPrinter : creates
+  EcommerceWarehouseFactory ..> HighSpeedSorter : creates
+  ColdStorageWarehouseFactory ..> ColdResistantScanner : creates
+  ColdStorageWarehouseFactory ..> FreezerLabelPrinter : creates
+  ColdStorageWarehouseFactory ..> ColdStorageSorter : creates
+  HeavyCargoWarehouseFactory ..> RuggedScanner : creates
+  HeavyCargoWarehouseFactory ..> IndustrialLabelPrinter : creates
+  HeavyCargoWarehouseFactory ..> HeavyDutySorter : creates
+  PharmaWarehouseFactory ..> TraceableScanner : creates
+  PharmaWarehouseFactory ..> SecureLabelPrinter : creates
+  PharmaWarehouseFactory ..> ValidatedSorter : creates
+}
+
+class WarehouseSystem <<Client>>
+class FactorySelector
+class Main
+WarehouseSystem --> WarehouseFactory : receives exactly one family
+WarehouseSystem *-- Scanner
+WarehouseSystem *-- LabelPrinter
+WarehouseSystem *-- Sorter
+FactorySelector ..> WarehouseFactory : runtime selection
+Main --> FactorySelector
+Main --> WarehouseSystem
+
+note right of WarehouseSystem
+Compatibility by architecture:
+products are not injected separately.
+One factory creates the complete set,
+so the public client API cannot mix families.
+end note
+@enduml
