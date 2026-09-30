@@ -3,6 +3,7 @@ import abstractfactory.WarehouseFactory;
 import families.ColdStorageWarehouseFactory;
 import families.EcommerceWarehouseFactory;
 import families.HeavyCargoWarehouseFactory;
+import families.PharmaWarehouseFactory;
 
 public final class FactorySelector {
     private FactorySelector() {}
@@ -12,6 +13,7 @@ public final class FactorySelector {
             case "ecommerce", "ecom" -> new EcommerceWarehouseFactory();
             case "cold", "coldstorage" -> new ColdStorageWarehouseFactory();
             case "heavy", "heavycargo" -> new HeavyCargoWarehouseFactory();
+            case "pharma", "medical" -> new PharmaWarehouseFactory();
             default -> throw new IllegalArgumentException("Unknown family: " + raw);
         };
     }
